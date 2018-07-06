@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Belatrix Exercise</title>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script>
+		$(document).ready(function() {
+		    init();
+		});
+
+		function init() {
+			$("#fileTxt").change(function(element) {
+                readFile(element);
+            });
+		}
+
+		function readFile(element) {
+			var fileTxt = element.target.files[0];
+
+			if (!fileTxt) {
+				return;
+			}
+
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var contentFile = e.target.result;
+				$('#contentFileTxt').html(contentFile);
+
+				contentFile = contentFile.replace(/[�\"]/g, "");
+				var contentArray = contentFile.split('\n');
+				contentArray = contentArray.filter(e => e.trim() != '');
+				readLines(contentArray);
+			};
+			reader.readAsText(fileTxt);
+		}
+
+		function readLines(contentArray) {
+			for(var i=0; i<contentArray.length; i++) {
+				var lineArray = contentArray[i].split('/ ');
+				lineArray = lineArray.reverse();
+				lineArray = lineArray.filter(e => e.trim() != '');
+				if(lineArray.length > 0) {
+					structureBuild(lineArray);
+				}
+			}
+		}
+
+		function structureBuild(lineArray) {
+			var arr = [];
+			var output = '';
+
+			for(var i=0; i<lineArray.length; i++) {
+				var d = {
+					id: lineArray[i].substring(0, lineArray[i].indexOf(' ')).trim(),
+					name: lineArray[i].substring(lineArray[i].indexOf(' ')+1).trim()
+				};
+				arr.push(d);
+			}
+
+			if(arr.length == 1) {
+				output += '<tr><td>'+arr[0]['id']+'</td><td>'+arr[0]['name']+'</td><td>-</td><td>-</td></tr>';
+				$('#tableDepartamento').append(output);
+			} else {
+				output += '<tr><td>'+arr[0]['id']+'</td><td>'+arr[0]['name']+'</td><td>'+arr[1]['id']+'</td><td>'+arr[1]['name']+'</td></tr>';
+				if(arr.length == 2) {
+					$('#tableProvincia').append(output);
+				} else if(arr.length == 3) {
+					$('#tableDistrito').append(output);
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<div class="container-fluid">
+		<h1 class="text-center">Ubigeos</h1>
+
+		<input type="file" id="fileTxt" accept=".txt" />
+
+		<h4>Contenido del archivo:</h4>
+		<pre id="contentFileTxt"></pre>
+
+		<h4>DEPARTAMENTO</h4>
+		<table id="tableDepartamento" class="table table-bordered">
+			<tr>
+				<td>Código</td>
+				<td>Nombre</td>
+				<td>Código Padre</td>
+				<td>Descripción Padre</td>
+			</tr>
+		</table>
+
+		<h4>PROVINCIA</h4>
+		<table id="tableProvincia" class="table table-bordered">
+			<tr>
+				<td>Código</td>
+				<td>Nombre</td>
+				<td>Código Padre</td>
+				<td>Descripción Padre</td>
+			</tr>
+		</table>
+
+		<h4>DISTRITO</h4>
+		<table id="tableDistrito" class="table table-bordered">
+			<tr>
+				<td>Código</td>
+				<td>Nombre</td>
+				<td>Código Padre</td>
+				<td>Descripción Padre</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
